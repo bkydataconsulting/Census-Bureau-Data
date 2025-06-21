@@ -24,18 +24,18 @@ try:
 
     st.dataframe(df, use_container_width=True)
 
-    # Show a map of the top 100 ZIP codes by median income, dot size by income
-    top100 = df.head(100).copy()
-    top100 = top100.rename(columns={"Latitude": "lat", "Longitude": "lon"})
-    min_income = top100["Median_Income"].min()
-    max_income = top100["Median_Income"].max()
+    # Show a map of the top 500 ZIP codes by median income, dot size by income
+    top500 = df.head(500).copy()
+    top500 = top500.rename(columns={"Latitude": "lat", "Longitude": "lon"})
+    min_income = top500["Median_Income"].min()
+    max_income = top500["Median_Income"].max()
     if max_income == min_income:
-        top100["radius"] = 1000
+        top500["radius"] = 1000
     else:
-        top100["radius"] = 1000 + 4000 * (top100["Median_Income"] - min_income) / (max_income - min_income)
+        top500["radius"] = 1000 + 4000 * (top500["Median_Income"] - min_income) / (max_income - min_income)
     layer = pdk.Layer(
         "ScatterplotLayer",
-        data=top100,
+        data=top500,
         get_position='[lon, lat]',
         get_radius="radius",
         get_fill_color=[255, 0, 0, 140],
@@ -43,8 +43,8 @@ try:
         auto_highlight=True,
     )
     view_state = pdk.ViewState(
-        latitude=top100["lat"].mean(),
-        longitude=top100["lon"].mean(),
+        latitude=top500["lat"].mean(),
+        longitude=top500["lon"].mean(),
         zoom=4,
         pitch=0,
     )
