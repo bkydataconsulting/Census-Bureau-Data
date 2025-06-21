@@ -10,6 +10,14 @@ st.markdown("Displays median household income and population by U.S. ZIP code (Z
 try:
     # Use the new function to get income and population data by ZIP code
     df = get_median_income_by_zip()
+
+    # --- Add state filter ---
+    states = df["State_Name"].dropna().unique()
+    selected_state = st.selectbox("Select a state:", ["All"] + sorted(states))
+    if selected_state != "All":
+        df = df[df["State_Name"] == selected_state]
+    # ---
+
     st.dataframe(df, use_container_width=True)
 
     # Show a bar chart of median income by ZIP code (showing top 20 for readability)

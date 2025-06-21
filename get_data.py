@@ -48,8 +48,8 @@ def get_median_income_by_state():
 def get_median_income_by_zip():
     """
     Fetches the median household income and population for each ZIP Code Tabulation Area (ZCTA) from the US Census API.
+    Merges with uszips.csv to add state info for filtering.
     Returns a DataFrame sorted by income (highest to lowest).
-    Note: ZCTAs are the Census Bureau's approximation of ZIP codes.
     """
     url = "https://api.census.gov/data/2022/acs/acs5"
     params = {
@@ -70,5 +70,12 @@ def get_median_income_by_zip():
     # Convert columns to numeric, handling missing values
     df["Median_Income"] = pd.to_numeric(df["Median_Income"], errors='coerce')
     df["Population"] = pd.to_numeric(df["Population"], errors='coerce')
+
+    # --- Merge with uszips.csv to get state info ---
+    zip_map = pd.read_csv("uszips.csv", dtype={"zip": str})
+    zip_map = zip_map[["zip", "state_id", "state_name"]].rename(columns={"zip": "ZIP_Code", "state_id": "State", "state_name": "State_Name"})
+    df = df.merge(zip_map, on="ZIP_Code", how="left")
+    # ---
+
     # Select only the relevant columns for display
-    return df[["ZIP_Code", "Median_Income", "Population"]].sort_values(by="Median_Income", ascending=False)
+    return df[["ZIP_Code", "State", "State_Name", "Median_Income", "Population"]].sort_values(by="Median_Income", ascending=False)
