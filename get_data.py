@@ -71,11 +71,11 @@ def get_median_income_by_zip():
     df["Median_Income"] = pd.to_numeric(df["Median_Income"], errors='coerce')
     df["Population"] = pd.to_numeric(df["Population"], errors='coerce')
 
-    # --- Merge with uszips.csv to get state info ---
+    # --- Merge with uszips.csv to get state info and coordinates ---
     zip_map = pd.read_csv("uszips.csv", dtype={"zip": str})
-    zip_map = zip_map[["zip", "state_id", "state_name"]].rename(columns={"zip": "ZIP_Code", "state_id": "State", "state_name": "State_Name"})
+    zip_map = zip_map[["zip", "state_id", "state_name", "lat", "lng"]].rename(columns={"zip": "ZIP_Code", "state_id": "State", "state_name": "State_Name", "lat": "Latitude", "lng": "Longitude"})
     df = df.merge(zip_map, on="ZIP_Code", how="left")
     # ---
 
     # Select only the relevant columns for display
-    return df[["ZIP_Code", "State", "State_Name", "Median_Income", "Population"]].sort_values(by="Median_Income", ascending=False)
+    return df[["ZIP_Code", "State", "State_Name", "Median_Income", "Population", "Latitude", "Longitude"]].sort_values(by="Median_Income", ascending=False)
